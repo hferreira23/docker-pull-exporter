@@ -1,0 +1,14 @@
+---
+containers:
+  alertmanager-bot:
+    namespace: "hferreira"
+    name: "alertmanager-bot"
+  unbound:
+    namespace: "hferreira"
+    name: "unbound"
+  gitea:
+    namespace: "hferreira"
+    name: "gitea"
+  ara:
+    namespace: "hferreira"
+    name: "ansible-ara"
