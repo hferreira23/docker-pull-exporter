@@ -12,3 +12,18 @@ containers:
   ara:
     namespace: "hferreira"
     name: "ansible-ara"
+  grafana-image-renderer:
+    namespace: "hferreira"
+    name: "grafana-image-renderer"
+  docker-pull-exporter:
+    namespace: "hferreira"
+    name: "docker-pull-exporter"
+  docker-exporter:
+    namespace: "hferreira"
+    name: "docker-exporter"
+  rpi-docker-openvpn:
+    namespace: "hferreira"
+    name: "rpi-docker-openvpn"
+  rpi-docker-zabbix:
+    namespace: "hferreira"
+    name: "rpi-docker-zabbix"
