@@ -4,9 +4,9 @@ from prometheus_client import make_wsgi_app
 import requests
 import copy
 import string
-import random
 import logging
 import yaml
+import concurrent.futures
 
 #Logging
 logger = logging.getLogger(__name__)
@@ -14,12 +14,19 @@ logger = logging.getLogger(__name__)
 #Create WSGI app
 metrics_app = make_wsgi_app(REGISTRY)
 
+#Function to fetch pull numbers from Docker Hub website in JSON format
+def load_url(url, timeout):
+    ans = requests.get(url, timeout=timeout)
+    return ans.json()
+
 #Get Docker Pull metrics
 class CustomCollector(object):
     def __init__(self):
         pass
 
     def collect(self):
+        CONNECTIONS = 100
+        TIMEOUT = 5
         #Read containers from yml
         with open('containers.yml') as f:
             data = yaml.safe_load(f)
@@ -30,12 +37,23 @@ class CustomCollector(object):
             delete_dict = {sp_character: '_' for sp_character in string.punctuation}
             table = str.maketrans(delete_dict)
 
-            #Fetch metrics
+            #Generate URL list
             response_json = []
+            urls = []
             for k, v in containers.items():
                 url = "https://hub.docker.com/v2/repositories/"+v.get('namespace')+"/"+v.get('name')+"/"
-                response = requests.get(url)
-                response_json.append(copy.deepcopy(response.json()))
+                urls.append(copy.deepcopy(url))
+
+            #Fetch docker pulls total
+            with concurrent.futures.ThreadPoolExecutor(max_workers=CONNECTIONS) as executor:
+                future_to_url = (executor.submit(load_url, url, TIMEOUT) for url in urls)
+                for future in concurrent.futures.as_completed(future_to_url):
+                    try:
+                        data = future.result()
+                    except Exception as exc:
+                        data = str(type(exc))
+                    finally:
+                        response_json.append(data)
 
             #Generate metric output
             for item in response_json:
