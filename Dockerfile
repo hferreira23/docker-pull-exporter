@@ -26,6 +26,8 @@ RUN addgroup -S -g 2004 docker_pull_exporter && \
 COPY --from=builder /build /usr/local
 COPY src/* /opt/docker_pull_exporter/
 
+RUN chown 2004.2004 -R /opt/docker_pull_exporter
+
 EXPOSE 2004
 
 ENTRYPOINT ["uwsgi", "--ini", "/opt/docker_pull_exporter/docker_pull_exporter.ini"]
