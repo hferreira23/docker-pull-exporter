@@ -56,13 +56,13 @@ class CustomCollector(object):
                         response_json.append(data)
 
             #Generate metric output
-            for item in response_json:
-                docker_namespace = item['namespace']
-                docker_name = item['name']
+            for item in range(len(response_json)):
+                docker_namespace = response_json[item].get('namespace')
+                docker_name = response_json[item].get('name')
                 docker_namespace = docker_namespace.translate(table)
                 docker_name = docker_name.translate(table)
-                g = GaugeMetricFamily('dockerpulls_'+docker_namespace+'_'+docker_name+'_total', 'Total Pulls for: '+item['namespace']+'/'+item['name'])
-                g.add_metric('docker_pulls', item['pull_count'])
+                g = GaugeMetricFamily('dockerpulls_'+docker_namespace+'_'+docker_name+'_total', 'Total Pulls for: '+response_json[item].get('namespace')+'/'+response_json[item].get('name'))
+                g.add_metric('docker_pulls', response_json[item].get('pull_count'))
                 yield g
 
 #Register the collector for metrics display
