@@ -17,7 +17,9 @@ RUN python3 -m pip install --prefix="/build" requests prometheus_client uwsgi
 
 FROM base
 
-RUN apk add bash && \
+ENV TZ=Europe/Lisbon
+
+RUN apk add bash tzdata && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
 RUN addgroup -S -g 2004 docker_pull_exporter && \
